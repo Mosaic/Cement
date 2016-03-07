@@ -12,6 +12,16 @@ class Registry
     protected static $definitions = [];
 
     /**
+     * @param $component
+     */
+    public function add($component)
+    {
+        foreach ($component->getDefinitions() as $definition) {
+            $this->define($definition);
+        }
+    }
+
+    /**
      * @param DefinitionProviderInterface $definition
      */
     public function define(DefinitionProviderInterface $definition)

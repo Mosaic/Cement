@@ -2,9 +2,9 @@
 
 namespace Mosaic\Definitions;
 
-use Mosaic\Contracts\EnvironmentVariablesLoader;
-use Mosaic\Cement\EnvironmentVariables\Adapters\DotEnvVariableLoader;
 use Interop\Container\Definition\DefinitionProviderInterface;
+use Mosaic\Cement\EnvironmentVariables\Adapters\DotEnvVariableLoader;
+use Mosaic\Contracts\EnvironmentVariablesLoader;
 
 class DotEnvDefinition implements DefinitionProviderInterface
 {

@@ -2,10 +2,10 @@
 
 namespace Mosaic\Cement\Tests\Bootstrappers;
 
-use Mosaic\Cement\Mosaic;
-use Mosaic\Cement\EnvironmentVariables\EnvironmentVariablesLoader;
-use Mosaic\Cement\Bootstrap\LoadEnvironmentVariables;
 use Mockery\Mock;
+use Mosaic\Cement\Bootstrap\LoadEnvironmentVariables;
+use Mosaic\Cement\EnvironmentVariables\EnvironmentVariablesLoader;
+use Mosaic\Cement\Mosaic;
 
 class LoadEnvironmentVariablesTest extends \PHPUnit_Framework_TestCase
 {

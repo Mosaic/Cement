@@ -5,6 +5,7 @@ namespace Mosaic\Cement;
 use Interop\Container\Definition\DefinitionProviderInterface;
 use Mosaic\Cement\Bootstrap\RegisterDefinitions;
 use Mosaic\Cement\Components\Registry;
+use Mosaic\Common\Components\Component;
 use Mosaic\Container\Container;
 use Mosaic\Container\ContainerDefinition;
 use Mosaic\Container\Definitions\LaravelContainerDefinition;
@@ -27,11 +28,6 @@ class Application
     protected $context;
 
     /**
-     * @var null
-     */
-    protected $path;
-
-    /**
      * @var string
      */
     protected $env = 'production';
@@ -47,59 +43,23 @@ class Application
     ];
 
     /**
-     * Application constructor.
-     *
-     * @param string $path
      * @param string $containerDefinition
      */
-    public function __construct(string $path, string $containerDefinition = LaravelContainerDefinition::class)
+    public function __construct(string $containerDefinition = LaravelContainerDefinition::class)
     {
-        $this->path     = $path;
         $this->registry = new Registry();
 
         $this->defineContainer(new $containerDefinition);
     }
 
     /**
-     * Application root path
-     *
-     * @param string $path
-     *
-     * @return string
+     * @param Component[] $components
      */
-    public function path(string $path = '') : string
+    public function components(array $components)
     {
-        return rtrim($this->path . '/' . $path, '/');
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return string
-     */
-    public function configPath(string $path = '') : string
-    {
-        return $this->path('config/' . $path);
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return string
-     */
-    public function storagePath(string $path = '') : string
-    {
-        return $this->path('storage/' . $path);
-    }
-
-    /**
-     * @param string $path
-     *
-     * @return string
-     */
-    public function viewsPath(string $path = '') : string
-    {
-        return $this->path('resources/views/' . $path);
+        foreach ($components as $component) {
+            $this->getRegistry()->add($component);
+        }
     }
 
     /**
@@ -149,6 +109,7 @@ class Application
     {
         $this->container = $definition->getDefinition();
         $this->container->instance(Container::class, $this->container);
+
         //$this->container->instance(ApplicationContract::class, $this);
 
         return $this->container;

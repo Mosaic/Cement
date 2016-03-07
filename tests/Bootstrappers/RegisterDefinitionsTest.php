@@ -2,10 +2,10 @@
 
 namespace Mosaic\Cement\Tests\Bootstrappers;
 
-use Mosaic\Cement\Mosaic;
-use Mosaic\Container\Container;
 use Mosaic\Cement\Bootstrap\RegisterDefinitions;
 use Mosaic\Cement\Components\Registry;
+use Mosaic\Cement\Mosaic;
+use Mosaic\Container\Container;
 
 class RegisterDefinitionsTest extends \PHPUnit_Framework_TestCase
 {

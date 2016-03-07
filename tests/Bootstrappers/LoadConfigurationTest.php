@@ -2,10 +2,10 @@
 
 namespace Mosaic\Cement\Tests\Bootstrappers;
 
+use Mockery\Mock;
+use Mosaic\Cement\Bootstrap\LoadConfiguration;
 use Mosaic\Cement\Mosaic;
 use Mosaic\Config\Config;
-use Mosaic\Cement\Bootstrap\LoadConfiguration;
-use Mockery\Mock;
 
 class LoadConfigurationTest extends \PHPUnit_Framework_TestCase
 {

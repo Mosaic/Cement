@@ -2,10 +2,10 @@
 
 namespace Mosaic\Cement\Bootstrap;
 
-use Mosaic\Contracts\Application;
 use Mosaic\Container\Container;
+use Mosaic\Contracts\Application;
 
-class RegisterDefinitions implements Bootstrapper
+class RegisterDefinitions
 {
     /**
      * @var Container
@@ -25,7 +25,7 @@ class RegisterDefinitions implements Bootstrapper
     /**
      * @param Application $app
      */
-    public function bootstrap(Application $app)
+    public function bootstrap($app)
     {
         foreach ($app->getRegistry()->getDefinitions() as $abstract => $concrete) {
             if (is_string($concrete) || is_callable($concrete)) {

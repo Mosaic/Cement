@@ -2,18 +2,17 @@
 
 namespace Mosaic\Tests;
 
+use Interop\Container\Definition\DefinitionProviderInterface;
+use Mockery\MockInterface;
 use Mosaic\Application;
-use Mosaic\Container\Container;
-use Mosaic\Container\ContainerDefinition;
 use Mosaic\Cement\Bootstrap\Bootstrapper;
-use Mosaic\Cement\Bootstrap\HandleExceptions;
 use Mosaic\Cement\Bootstrap\LoadConfiguration;
 use Mosaic\Cement\Bootstrap\LoadEnvironmentVariables;
 use Mosaic\Cement\Bootstrap\LoadRoutes;
 use Mosaic\Cement\Bootstrap\RegisterDefinitions;
 use Mosaic\Cement\Components\Registry;
-use Interop\Container\Definition\DefinitionProviderInterface;
-use Mockery\MockInterface;
+use Mosaic\Container\Container;
+use Mosaic\Container\ContainerDefinition;
 use PHPUnit_Framework_TestCase;
 
 class ApplicationTest extends PHPUnit_Framework_TestCase

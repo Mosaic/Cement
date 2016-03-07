@@ -2,9 +2,9 @@
 
 namespace Mosaic\Cement\Tests\Components;
 
-use Mosaic\Contracts\Container\Container;
-use Mosaic\Cement\Components\Registry;
 use Interop\Container\Definition\DefinitionProviderInterface;
+use Mosaic\Cement\Components\Registry;
+use Mosaic\Contracts\Container\Container;
 
 class RegistryTest extends \PHPUnit_Framework_TestCase
 {

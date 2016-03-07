@@ -2,10 +2,10 @@
 
 namespace Mosaic\Cement\Tests\Bootstrappers;
 
+use Mosaic\Cement\Bootstrap\LoadRoutes;
 use Mosaic\Cement\Mosaic;
 use Mosaic\Routing\RouteLoader;
 use Mosaic\Routing\Router;
-use Mosaic\Cement\Bootstrap\LoadRoutes;
 use PHPUnit_Framework_TestCase;
 
 class LoadRoutesTest extends PHPUnit_Framework_TestCase
