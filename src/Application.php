@@ -55,7 +55,7 @@ class Application
     /**
      * @param Component[] $components
      */
-    public function components(array $components)
+    public function components(Component  ...$components)
     {
         foreach ($components as $component) {
             $this->getRegistry()->add($component);
