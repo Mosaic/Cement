@@ -3,6 +3,7 @@
 namespace Mosaic\Cement\Components;
 
 use Interop\Container\Definition\DefinitionProviderInterface;
+use Mosaic\Common\Components\Component;
 
 class Registry
 {
@@ -12,9 +13,9 @@ class Registry
     protected static $definitions = [];
 
     /**
-     * @param $component
+     * @param Component $component
      */
-    public function add($component)
+    public function add(Component $component)
     {
         foreach ($component->getDefinitions() as $definition) {
             $this->define($definition);

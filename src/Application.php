@@ -9,6 +9,7 @@ use Mosaic\Common\Components\Component;
 use Mosaic\Container\Container;
 use Mosaic\Container\ContainerDefinition;
 use Mosaic\Container\Definitions\LaravelContainerDefinition;
+use Mosaic\Http\Request;
 
 class Application
 {
@@ -53,12 +54,20 @@ class Application
     }
 
     /**
+     * @return Request
+     */
+    public function captureRequest() : Request
+    {
+        return $this->getContainer()->make(Request::class);
+    }
+
+    /**
      * @param Component[] $components
      */
     public function components(Component  ...$components)
     {
         foreach ($components as $component) {
-            $this->getRegistry()->add($component);
+            $this->registry->add($component);
         }
     }
 
@@ -67,25 +76,13 @@ class Application
      */
     public function define(DefinitionProviderInterface $definition)
     {
-        $this->getRegistry()->define($definition, $this);
-    }
-
-    /**
-     * @param string[] $definitions
-     */
-    public function definitions(array $definitions)
-    {
-        foreach ($definitions as $definition) {
-            $this->define(
-                $this->getContainer()->make($definition)
-            );
-        }
+        $this->registry->define($definition);
     }
 
     /**
      * @return Registry
      */
-    public function getRegistry() : Registry
+    public function getRegistry()
     {
         return $this->registry;
     }
@@ -109,7 +106,6 @@ class Application
     {
         $this->container = $definition->getDefinition();
         $this->container->instance(Container::class, $this->container);
-
         //$this->container->instance(ApplicationContract::class, $this);
 
         return $this->container;
@@ -147,21 +143,5 @@ class Application
     public function isLocal() : bool
     {
         return $this->env() === 'local';
-    }
-
-    /**
-     * @param string $context
-     */
-    public function setContext(string $context)
-    {
-        $this->context = $context;
-    }
-
-    /**
-     * @return string
-     */
-    public function getContext() : string
-    {
-        return $this->context;
     }
 }
