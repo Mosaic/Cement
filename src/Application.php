@@ -3,7 +3,7 @@
 namespace Mosaic\Cement;
 
 use Interop\Container\Definition\DefinitionProviderInterface;
-use Mosaic\Cement\Bootstrap\RegisterDefinitions;
+use Mosaic\Cement\Components\ContainerProviderBinder;
 use Mosaic\Cement\Components\Registry;
 use Mosaic\Common\Components\Component;
 use Mosaic\Container\Container;
@@ -24,33 +24,15 @@ class Application
     protected $container;
 
     /**
-     * @var string
-     */
-    protected $context;
-
-    /**
-     * @var string
-     */
-    protected $env = 'production';
-
-    /**
-     * @var array
-     */
-    protected $bootstrappers = [
-        RegisterDefinitions::class,
-        //LoadEnvironmentVariables::class,
-        //LoadConfiguration::class,
-        //LoadRoutes::class,
-    ];
-
-    /**
      * @param string $containerDefinition
      */
     public function __construct(string $containerDefinition = LaravelContainerDefinition::class)
     {
-        $this->registry = new Registry();
-
         $this->defineContainer(new $containerDefinition);
+
+        $this->registry = new Registry(
+            new ContainerProviderBinder($this->container)
+        );
     }
 
     /**
@@ -67,24 +49,24 @@ class Application
     public function components(Component  ...$components)
     {
         foreach ($components as $component) {
-            $this->registry->add($component);
+            $this->component($component);
         }
     }
 
     /**
-     * @param DefinitionProviderInterface $definition
+     * @param Component $component
      */
-    public function define(DefinitionProviderInterface $definition)
+    public function component(Component $component)
     {
-        $this->registry->define($definition);
+        $this->registry->add($component);
     }
 
     /**
-     * @return Registry
+     * @param DefinitionProviderInterface $provider
      */
-    public function getRegistry()
+    public function provide(DefinitionProviderInterface $provider)
     {
-        return $this->registry;
+        $this->registry->provide($provider);
     }
 
     /**
@@ -94,7 +76,7 @@ class Application
     {
         return $this->container;
     }
-
+    
     /**
      * Define a container implementation
      *
@@ -104,44 +86,9 @@ class Application
      */
     public function defineContainer(ContainerDefinition $definition) : Container
     {
-        $this->container = $definition->getDefinition();
+        $this->container = $definition->getContainerImplementation();
         $this->container->instance(Container::class, $this->container);
-        //$this->container->instance(ApplicationContract::class, $this);
 
         return $this->container;
-    }
-
-    /**
-     * Bootstrap the Application
-     */
-    public function bootstrap()
-    {
-        foreach ($this->bootstrappers as $bootstrapper) {
-            $this->getContainer()->make($bootstrapper)->bootstrap($this);
-        }
-    }
-
-    /**
-     * @return string
-     */
-    public function env() : string
-    {
-        return $this->env;
-    }
-
-    /**
-     * @param string $env
-     */
-    public function setEnvironment(string $env)
-    {
-        $this->env = $env;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isLocal() : bool
-    {
-        return $this->env() === 'local';
     }
 }

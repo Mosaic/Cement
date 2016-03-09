@@ -167,7 +167,7 @@ class ContainerDefinitionStub implements ContainerDefinition
     /**
      * @return Container
      */
-    public function getDefinition() : Container
+    public function getContainerImplementation() : Container
     {
         self::$mockInstance = \Mockery::mock(Container::class);
         self::$mockInstance->shouldReceive('instance');

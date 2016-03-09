@@ -8,52 +8,33 @@ use Mosaic\Common\Components\Component;
 class Registry
 {
     /**
-     * @var array
+     * @var ProviderBinder
      */
-    protected static $definitions = [];
+    protected $binder;
+
+    /**
+     * @param ProviderBinder $binder
+     */
+    public function __construct(ProviderBinder $binder)
+    {
+        $this->binder = $binder;
+    }
 
     /**
      * @param Component $component
      */
     public function add(Component $component)
     {
-        foreach ($component->getDefinitions() as $definition) {
-            $this->define($definition);
+        foreach ($component->getProviders() as $definition) {
+            $this->provide($definition);
         }
     }
 
     /**
-     * @param DefinitionProviderInterface $definition
+     * @param DefinitionProviderInterface $provider
      */
-    public function define(DefinitionProviderInterface $definition)
+    public function provide(DefinitionProviderInterface $provider)
     {
-        foreach ($definition->getDefinitions() as $abstract => $concrete) {
-            $this->registerDefinition($abstract, $concrete);
-        }
-    }
-
-    /**
-     * @param string $as
-     * @param object $define
-     */
-    private function registerDefinition($as, $define)
-    {
-        self::$definitions[$as] = $define;
-    }
-
-    /**
-     * @return array
-     */
-    public function getDefinitions()
-    {
-        return self::$definitions;
-    }
-
-    /**
-     * Flush the registry
-     */
-    public static function flush()
-    {
-        static::$definitions = [];
+        $this->binder->bind($provider);
     }
 }
