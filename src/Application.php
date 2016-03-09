@@ -6,6 +6,8 @@ use Interop\Container\Definition\DefinitionProviderInterface;
 use Mosaic\Cement\Components\ContainerProviderBinder;
 use Mosaic\Cement\Components\Registry;
 use Mosaic\Common\Components\Component;
+use Mosaic\Common\Conventions\DefaultFolderStructure;
+use Mosaic\Common\Conventions\FolderStructureConvention;
 use Mosaic\Container\Container;
 use Mosaic\Container\ContainerDefinition;
 use Mosaic\Container\Definitions\LaravelContainerDefinition;
@@ -24,14 +26,24 @@ class Application
     protected $container;
 
     /**
+     * @var FolderStructureConvention
+     */
+    protected $folderStructure;
+
+    /**
+     * @param string $path
      * @param string $containerDefinition
      */
-    public function __construct(string $containerDefinition = LaravelContainerDefinition::class)
+    public function __construct(string $path, string $containerDefinition = LaravelContainerDefinition::class)
     {
         $this->defineContainer(new $containerDefinition);
 
         $this->registry = new Registry(
             new ContainerProviderBinder($this->container)
+        );
+
+        $this->folderStructure = new DefaultFolderStructure(
+            $path
         );
     }
 
@@ -76,7 +88,7 @@ class Application
     {
         return $this->container;
     }
-    
+
     /**
      * Define a container implementation
      *
@@ -90,5 +102,21 @@ class Application
         $this->container->instance(Container::class, $this->container);
 
         return $this->container;
+    }
+
+    /**
+     * @return DefaultFolderStructure|FolderStructureConvention
+     */
+    public function getFolderStructure()
+    {
+        return $this->folderStructure;
+    }
+
+    /**
+     * @param FolderStructureConvention $folderStructure
+     */
+    public function setFolderStructure(FolderStructureConvention $folderStructure)
+    {
+        $this->folderStructure = $folderStructure;
     }
 }
