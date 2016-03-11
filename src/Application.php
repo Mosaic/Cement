@@ -56,7 +56,7 @@ class Application
     }
 
     /**
-     * @param Component[] $components
+     * @param Component ...$components
      */
     public function components(Component  ...$components)
     {
