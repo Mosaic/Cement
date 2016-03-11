@@ -3,49 +3,87 @@
 namespace Mosaic\Cement\Tests\Components;
 
 use Interop\Container\Definition\DefinitionProviderInterface;
+use Mockery\Mock;
+use Mosaic\Cement\Components\ProviderBinder;
 use Mosaic\Cement\Components\Registry;
-use Mosaic\Contracts\Container\Container;
+use Mosaic\Common\Components\Component;
 
 class RegistryTest extends \PHPUnit_Framework_TestCase
 {
-    public $registry;
+    /**
+     * @var Registry
+     */
+    protected $registry;
+
+    /**
+     * @var Mock
+     */
+    protected $binder;
 
     public function setUp()
     {
-        $this->registry = new Registry();
-    }
-
-    public function test_can_define_a_definition()
-    {
-        $definition = new DefinitionStub();
-        $this->registry->define(
-            $definition
+        $this->registry = new Registry(
+            $this->binder = \Mockery::mock(ProviderBinder::class)
         );
-
-        $this->assertEquals('concrete', $this->registry->getDefinitions()['abstract']);
     }
 
-    public function tearDown()
+    public function test_can_add_a_component()
     {
-        parent::tearDown();
-        Registry::flush();
+        $provider = new SomeProvider();
+
+        $this->binder->shouldReceive('bind')->with($provider)->once();
+
+        $this->registry->add(new SomeComponent($provider));
+    }
+
+    public function test_can_add_a_provider()
+    {
+        $provider = new SomeProvider();
+
+        $this->binder->shouldReceive('bind')->with($provider)->once();
+
+        $this->registry->provide($provider);
     }
 }
 
-class DefinitionStub implements DefinitionProviderInterface
+class SomeComponent implements Component
 {
     /**
-     * Returns the definition to register in the container.
-     *
-     * Definitions must be indexed by their entry ID. For example:
-     *
-     *     return [
-     *         'logger' => ...
-     *         'mailer' => ...
-     *     ];
-     *
-     * @return array
+     * @var
      */
+    private $provider;
+
+    /**
+     * SomeComponent constructor.
+     * @param $provider
+     */
+    public function __construct($provider)
+    {
+        $this->provider = $provider;
+    }
+
+    /**
+     * @return DefinitionProviderInterface[]
+     */
+    public function getProviders() : array
+    {
+        return [
+            $this->provider
+        ];
+    }
+
+    /**
+     * @param string   $name
+     * @param callable $callback
+     */
+    public static function extend(string $name, callable $callback)
+    {
+        // TODO: Implement extend() method.
+    }
+}
+
+class SomeProvider implements DefinitionProviderInterface
+{
     public function getDefinitions()
     {
         return [

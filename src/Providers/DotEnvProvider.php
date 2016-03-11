@@ -1,12 +1,12 @@
 <?php
 
-namespace Mosaic\Definitions;
+namespace Mosaic\Cement\Providers;
 
 use Interop\Container\Definition\DefinitionProviderInterface;
 use Mosaic\Cement\EnvironmentVariables\Adapters\DotEnvVariableLoader;
-use Mosaic\Contracts\EnvironmentVariablesLoader;
+use Mosaic\Cement\EnvironmentVariables\EnvironmentVariablesLoader;
 
-class DotEnvDefinition implements DefinitionProviderInterface
+class DotEnvProvider implements DefinitionProviderInterface
 {
     /**
      * Returns the definition to register in the container.

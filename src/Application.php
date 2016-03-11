@@ -52,7 +52,7 @@ class Application
      */
     public function captureRequest() : Request
     {
-        return $this->getContainer()->make(Request::class);
+        return $this->getContainer()->get(Request::class);
     }
 
     /**
@@ -105,7 +105,7 @@ class Application
     }
 
     /**
-     * @return DefaultFolderStructure|FolderStructureConvention
+     * @return FolderStructureConvention
      */
     public function getFolderStructure()
     {
@@ -118,5 +118,13 @@ class Application
     public function setFolderStructure(FolderStructureConvention $folderStructure)
     {
         $this->folderStructure = $folderStructure;
+    }
+
+    /**
+     * @return Registry
+     */
+    public function getRegistry() : Registry
+    {
+        return $this->registry;
     }
 }

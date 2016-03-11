@@ -4,7 +4,7 @@ namespace Mosaic\Cement\EnvironmentVariables\Adapters;
 
 use Dotenv\Dotenv;
 use Dotenv\Exception\InvalidPathException;
-use Mosaic\Contracts\EnvironmentVariablesLoader;
+use Mosaic\Cement\EnvironmentVariables\EnvironmentVariablesLoader;
 
 class DotEnvVariableLoader implements EnvironmentVariablesLoader
 {

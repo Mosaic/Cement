@@ -4,15 +4,14 @@ namespace Mosaic\Tests;
 
 use Interop\Container\Definition\DefinitionProviderInterface;
 use Mockery\MockInterface;
-use Mosaic\Application;
-use Mosaic\Cement\Bootstrap\Bootstrapper;
-use Mosaic\Cement\Bootstrap\LoadConfiguration;
-use Mosaic\Cement\Bootstrap\LoadEnvironmentVariables;
-use Mosaic\Cement\Bootstrap\LoadRoutes;
-use Mosaic\Cement\Bootstrap\RegisterDefinitions;
+use Mosaic\Cement\Application;
 use Mosaic\Cement\Components\Registry;
+use Mosaic\Common\Components\AbstractComponent;
+use Mosaic\Common\Conventions\DefaultFolderStructure;
+use Mosaic\Common\Conventions\FolderStructureConvention;
 use Mosaic\Container\Container;
 use Mosaic\Container\ContainerDefinition;
+use Mosaic\Http\Request;
 use PHPUnit_Framework_TestCase;
 
 class ApplicationTest extends PHPUnit_Framework_TestCase
@@ -22,42 +21,6 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $app = new Application(__DIR__);
 
         $this->assertInstanceOf(Registry::class, $app->getRegistry());
-    }
-
-    public function test_can_get_path()
-    {
-        $path = __DIR__;
-        $app  = new Application($path);
-
-        $this->assertEquals($path, $app->path());
-        $this->assertEquals($path . '/path', $app->path('path'));
-    }
-
-    public function test_can_get_config_path()
-    {
-        $path = __DIR__;
-        $app  = new Application($path);
-
-        $this->assertEquals($path . '/config', $app->configPath());
-        $this->assertEquals($path . '/config/path', $app->configPath('path'));
-    }
-
-    public function test_can_get_storage_path()
-    {
-        $path = __DIR__;
-        $app  = new Application($path);
-
-        $this->assertEquals($path . '/storage', $app->storagePath());
-        $this->assertEquals($path . '/storage/path', $app->storagePath('path'));
-    }
-
-    public function test_can_get_views_path()
-    {
-        $path = __DIR__;
-        $app  = new Application($path);
-
-        $this->assertEquals($path . '/resources/views', $app->viewsPath());
-        $this->assertEquals($path . '/resources/views/path', $app->viewsPath('path'));
     }
 
     public function test_it_defines_a_default_container_when_application_is_first_created()
@@ -84,76 +47,79 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(ContainerDefinitionStub::$mockInstance, $app->getContainer());
     }
 
-    public function test_application_can_define_some_component()
+    public function test_app_can_capture_a_request()
     {
-        $app = new Application(__DIR__);
-        $app->define(new SomeDefinitionStub);
+        $requestMock = \Mockery::mock(Request::class);
 
-        $this->assertEquals('concrete', $app->getRegistry()->getDefinitions()['abstract']);
+        $app = new Application(__DIR__);
+        $app->getContainer()->bind(Request::class, function () use ($requestMock) {
+            return $requestMock;
+        });
+
+        $this->assertEquals($requestMock, $app->captureRequest());
     }
 
-    public function test_can_define_multiple_definitions_at_onces()
+    public function test_can_add_a_components()
     {
         $app = new Application(__DIR__);
-        $app->definitions([
-            SomeDefinitionStub::class
-        ]);
 
-        $this->assertEquals('concrete', $app->getRegistry()->getDefinitions()['abstract']);
+        $this->assertFalse($app->getContainer()->has('abstract'));
+
+        $app->components(
+            SomeComponentStub::stub()
+        );
+
+        $this->assertTrue($app->getContainer()->has('abstract'));
     }
 
-    //public function test_will_delegate_on_all_configured_bootstrappers_to_bootstrap()
-    //{
-    //    $app = new Application(__DIR__, ContainerDefinitionStub::class);
-    //
-    //    $mockBootstrapper = \Mockery::mock(Bootstrapper::class);
-    //    $mockBootstrapper->shouldReceive('bootstrap')->times(5);
-    //
-    //    ContainerDefinitionStub::$mockInstance->shouldReceive('make')->with(RegisterDefinitions::class)
-    //                                          ->once()->andReturn($mockBootstrapper);
-    //    ContainerDefinitionStub::$mockInstance->shouldReceive('make')->with(LoadConfiguration::class)
-    //                                          ->once()->andReturn($mockBootstrapper);
-    //    ContainerDefinitionStub::$mockInstance->shouldReceive('make')->with(LoadEnvironmentVariables::class)
-    //                                          ->once()->andReturn($mockBootstrapper);
-    //    ContainerDefinitionStub::$mockInstance->shouldReceive('make')->with(LoadRoutes::class)
-    //                                          ->once()->andReturn($mockBootstrapper);
-    //
-    //    $app->bootstrap();
-    //}
-
-    public function test_can_set_environment()
+    public function test_can_add_a_component()
     {
         $app = new Application(__DIR__);
 
-        $app->setEnvironment('some_env');
+        $this->assertFalse($app->getContainer()->has('abstract'));
 
-        $this->assertEquals('some_env', $app->env());
+        $app->component(
+            SomeComponentStub::stub()
+        );
+
+        $this->assertTrue($app->getContainer()->has('abstract'));
     }
 
-    public function test_can_check_if_env_is_local()
+    public function test_can_add_a_provider()
     {
         $app = new Application(__DIR__);
 
-        $this->assertFalse($app->isLocal());
+        $this->assertFalse($app->getContainer()->has('abstract'));
 
-        $app->setEnvironment('local');
+        $app->provide(
+            new SomeProviderStub()
+        );
 
-        $this->assertTrue($app->isLocal());
+        $this->assertTrue($app->getContainer()->has('abstract'));
     }
 
-    public function test_can_set_context()
+    public function test_can_get_default_folder_structure()
+    {
+        $app             = new Application(__DIR__);
+        $folderStructure = $app->getFolderStructure();
+
+        $this->assertInstanceOf(FolderStructureConvention::class, $folderStructure);
+        $this->assertInstanceOf(DefaultFolderStructure::class, $folderStructure);
+    }
+
+    public function test_can_set_custom_folder_structure()
     {
         $app = new Application(__DIR__);
-        $app->setContext('web');
+        $app->setFolderStructure(new CustomFolderStructure);
+        $folderStructure = $app->getFolderStructure();
 
-        $this->assertEquals('web', $app->getContext());
+        $this->assertInstanceOf(FolderStructureConvention::class, $folderStructure);
+        $this->assertInstanceOf(CustomFolderStructure::class, $folderStructure);
     }
 
     public function tearDown()
     {
         \Mockery::close();
-
-        Registry::flush();
     }
 }
 
@@ -176,24 +142,69 @@ class ContainerDefinitionStub implements ContainerDefinition
     }
 }
 
-class SomeDefinitionStub implements DefinitionProviderInterface
+class SomeComponentStub extends AbstractComponent
 {
+    public function resolveStub()
+    {
+        return [
+            new SomeProviderStub
+        ];
+    }
+
     /**
-     * Returns the definition to register in the container.
-     *
-     * Definitions must be indexed by their entry ID. For example:
-     *
-     *     return [
-     *         'logger' => ...
-     *         'mailer' => ...
-     *     ];
-     *
+     * @param  callable $callback
      * @return array
      */
+    public function resolveCustom(callable $callback) : array
+    {
+        return $callback();
+    }
+}
+
+class SomeProviderStub implements DefinitionProviderInterface
+{
     public function getDefinitions()
     {
         return [
             'abstract' => 'concrete'
         ];
+    }
+}
+
+class CustomFolderStructure implements FolderStructureConvention
+{
+    /**
+     * @return string
+     */
+    public function basePath() : string
+    {
+    }
+
+    /**
+     * @return array
+     */
+    public function viewPaths() : array
+    {
+    }
+
+    /**
+     * @return string
+     */
+    public function viewCachePath() : string
+    {
+    }
+
+    /**
+     * @return string
+     */
+    public function cachePath() : string
+    {
+    }
+
+    /**
+     * @return string
+     */
+    public function storagePath() : string
+    {
     }
 }

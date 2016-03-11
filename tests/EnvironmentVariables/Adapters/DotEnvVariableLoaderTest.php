@@ -19,7 +19,7 @@ class DotEnvVariableLoaderTest extends PHPUnit_Framework_TestCase
 
     public function test_can_load_env_file()
     {
-        $this->loader->load(__DIR__ . '/../../../fixtures');
+        $this->loader->load(__DIR__ . '/../../fixtures/');
 
         $this->assertEquals('env_value', getenv('SOME_ENV'));
     }
